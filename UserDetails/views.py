@@ -57,7 +57,8 @@ def checkAlreadyPresent(uname):
             return False
         return True
     except:
-        return True
+        print('Exception no user found')
+        return False
 
 @csrf_exempt
 def signUp(request):
