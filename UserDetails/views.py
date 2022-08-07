@@ -47,6 +47,17 @@ def validateUser(request,uname):
             errorMessage=json.dumps(errorMessage)
             return HttpResponse(errorMessage)
 
+@csrf_exempt
+def checkAlreadyPresent(uname):
+    if(uname==None):
+        return True
+    try:
+        usr=User.objects.get(username=uname)
+        if(usr==None):
+            return False
+        return True
+    except:
+        return True
 
 @csrf_exempt
 def signUp(request):
@@ -54,6 +65,10 @@ def signUp(request):
         jsonData=request.body
         stream=io.BytesIO(jsonData)
         pythonData=JSONParser().parse(stream)
+        if(checkAlreadyPresent(pythonData['username'])):
+            msg={'msg':'Username already used'}
+            json_data=JSONRenderer().render(msg)
+            return HttpResponse(json_data,content_type="application/json")
         Serializer=UserSerializer(data=pythonData)
         if(Serializer.is_valid()):
             Serializer.save()
